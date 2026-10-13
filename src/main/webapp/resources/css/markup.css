@@ -1,0 +1,337 @@
+/*
+ * PDF Markup. A drafting-office look: slate chrome, a grey bench, white paper, and safety
+ * amber (the colour used to flag things on a shop floor) for whatever is active.
+ * Selectors start with body.markup-app so they win over the PrimeFaces theme.
+ */
+body.markup-app {
+  --ink: #1d262c;
+  --ink-2: #27333a;
+  --ink-3: #35444d;
+  --line: rgba(255, 255, 255, 0.16);
+  --text: #e6edf0;
+  --muted: #9fb0b8;
+  --amber: #f2a900;
+  --bench: #b4bcc2;
+  --paper: #ffffff;
+
+  margin: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--text);
+  font: 14px/1.4 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ------------------------------------------------------------ toolbar */
+
+body.markup-app .bar {
+  padding: 8px 12px 6px;
+  background: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+body.markup-app .bar form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+  margin: 0;
+}
+
+body.markup-app .bar form + form {
+  margin-top: 6px;
+}
+
+body.markup-app .grp {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+body.markup-app .grp + .grp,
+body.markup-app .grp + .opt {
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+}
+
+body.markup-app .bar .ui-button,
+body.markup-app .bar button.ui-button {
+  margin: 0;
+  padding: 5px 10px;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  box-shadow: none;
+}
+
+body.markup-app .bar .ui-button .ui-button-text,
+body.markup-app .bar .ui-button .ui-c {
+  color: inherit;
+  padding: 0;
+}
+
+body.markup-app .bar .ui-button:enabled:hover,
+body.markup-app .bar .ui-button.ui-state-hover {
+  background: #44565f;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+body.markup-app .bar .ui-button:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 1px;
+}
+
+body.markup-app .bar .ui-button.ui-state-disabled,
+body.markup-app .bar .ui-button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+body.markup-app .bar .ui-button.tool-active,
+body.markup-app .bar .ui-button.ui-state-active {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+body.markup-app .bar .save-btn:enabled {
+  background: #2f6f8f;
+  border-color: #4d93b5;
+}
+
+body.markup-app .field {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+body.markup-app .bar select,
+body.markup-app .bar input[type="color"] {
+  height: 28px;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+body.markup-app .bar input[type="color"] {
+  width: 34px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+body.markup-app .opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ------------------------------------------------------------ workspace */
+
+body.markup-app .workspace {
+  display: grid;
+  grid-template-columns: 172px 1fr;
+  min-height: 0;
+}
+
+body.markup-app #thumbs {
+  overflow-y: auto;
+  background: var(--ink-2);
+  border-right: 1px solid var(--line);
+}
+
+body.markup-app #thumbList {
+  list-style: none;
+  margin: 0;
+  padding: 12px 0 24px;
+}
+
+body.markup-app #thumbList li {
+  position: relative;
+  width: 132px;
+  margin: 0 auto 14px;
+  cursor: grab;
+  outline: 3px solid transparent;
+  outline-offset: 2px;
+}
+
+body.markup-app #thumbList li canvas {
+  display: block;
+  background: var(--paper);
+}
+
+body.markup-app #thumbList li.current {
+  outline-color: var(--amber);
+}
+
+body.markup-app #thumbList li:focus-visible {
+  outline-color: #fff;
+}
+
+body.markup-app #thumbList li.dragging {
+  opacity: 0.45;
+}
+
+body.markup-app #thumbList li.drop-before {
+  box-shadow: 0 -8px 0 -2px var(--amber);
+}
+
+body.markup-app #thumbList li.drop-after {
+  box-shadow: 0 8px 0 -2px var(--amber);
+}
+
+body.markup-app .thumb-label {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+body.markup-app #viewer {
+  position: relative;
+  overflow: auto;
+  padding: 24px;
+  background: var(--bench);
+}
+
+body.markup-app.file-drop .workspace {
+  outline: 3px dashed var(--amber);
+  outline-offset: -8px;
+}
+
+body.markup-app .page-wrap {
+  position: relative;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+body.markup-app .page-wrap[hidden] {
+  display: none;
+}
+
+body.markup-app .page-wrap canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+body.markup-app .overlay {
+  touch-action: none;
+}
+
+body.markup-app .overlay.tool-select { cursor: default; }
+body.markup-app .overlay.tool-highlight,
+body.markup-app .overlay.tool-rect,
+body.markup-app .overlay.tool-ink { cursor: crosshair; }
+body.markup-app .overlay.tool-text,
+body.markup-app .overlay.tool-note { cursor: text; }
+
+body.markup-app .editor {
+  position: absolute;
+  z-index: 5;
+  min-width: 190px;
+  max-width: 480px;
+  padding: 3px 6px;
+  background: #fffbe6;
+  border: 1px solid var(--amber);
+  border-radius: 2px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1.2;
+  resize: both;
+}
+
+body.markup-app .editor[hidden] {
+  display: none;
+}
+
+body.markup-app .empty {
+  max-width: 34rem;
+  margin: 14vh auto 0;
+  color: #26323a;
+}
+
+body.markup-app .empty[hidden] {
+  display: none;
+}
+
+body.markup-app .empty h1 {
+  margin: 0 0 10px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+body.markup-app .empty p {
+  margin: 0 0 20px;
+  max-width: 32rem;
+  font-size: 15px;
+}
+
+body.markup-app button.primary {
+  padding: 9px 18px;
+  background: var(--amber);
+  border: 0;
+  border-radius: 3px;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.markup-app button.primary:hover {
+  background: #ffbf2e;
+}
+
+body.markup-app button.primary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------ status bar */
+
+body.markup-app .status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  padding: 4px 12px;
+  background: var(--ink);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+body.markup-app .status span:first-child {
+  margin-right: auto;
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  body.markup-app .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  body.markup-app #thumbs {
+    display: none;
+  }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PDF Markup</title>
+    <h:outputStylesheet name="css/markup.css" />
+</h:head>
+
+<h:body styleClass="markup-app">
+
+    <p:growl widgetVar="growl" life="6000" sticky="false" />
+    <p:tooltip />
+
+    <header class="bar">
+        <h:form id="toolbar">
+            <span class="grp" role="group" aria-label="File">
+                <p:commandButton type="button" value="Open PDF" title="Open a PDF from your computer"
+                                 onclick="MarkupApp.act('open')" />
+                <p:commandButton type="button" value="Save copy" title="Apply changes and download a new PDF (Ctrl+S)"
+                                 styleClass="needs-doc save-btn" onclick="MarkupApp.act('save')" />
+            </span>
+
+            <span class="grp" role="group" aria-label="History">
+                <p:commandButton type="button" value="Undo" title="Undo (Ctrl+Z)"
+                                 styleClass="act-undo" onclick="MarkupApp.act('undo')" />
+                <p:commandButton type="button" value="Redo" title="Redo (Ctrl+Shift+Z)"
+                                 styleClass="act-redo" onclick="MarkupApp.act('redo')" />
+            </span>
+
+            <span class="grp" role="group" aria-label="Page">
+                <p:commandButton type="button" value="Rotate left" title="Rotate this page 90 degrees counter-clockwise"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('rotateLeft')" />
+                <p:commandButton type="button" value="Rotate right" title="Rotate this page 90 degrees clockwise"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('rotateRight')" />
+                <p:commandButton type="button" value="Move up" title="Move this page earlier in the document"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('moveEarlier')" />
+                <p:commandButton type="button" value="Move down" title="Move this page later in the document"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('moveLater')" />
+                <p:commandButton type="button" value="Delete page" title="Remove this page from the copy"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('deletePage')" />
+                <p:commandButton type="button" value="Add blank page" title="Insert a blank page after this one"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('insertBlank')" />
+                <p:commandButton type="button" value="Insert pages from PDF" title="Insert all pages of another PDF after this page"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('insertPdf')" />
+            </span>
+
+            <span class="grp" role="group" aria-label="View">
+                <p:commandButton type="button" value="Previous" title="Previous page (Page Up)"
+                                 styleClass="act-prev" onclick="MarkupApp.act('prev')" />
+                <p:commandButton type="button" value="Next" title="Next page (Page Down)"
+                                 styleClass="act-next" onclick="MarkupApp.act('next')" />
+                <p:commandButton type="button" value="Zoom out" title="Zoom out"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('zoomOut')" />
+                <p:commandButton type="button" value="Zoom in" title="Zoom in (or Ctrl + mouse wheel)"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('zoomIn')" />
+                <p:commandButton type="button" value="Fit width" title="Fit the page to the window width"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('zoomFit')" />
+            </span>
+        </h:form>
+
+        <h:form id="tools">
+            <span class="grp" role="group" aria-label="Markup tools">
+                <p:commandButton type="button" value="Select" title="Select, move or edit markup (double-click text and comments)"
+                                 styleClass="tool-btn tool-select needs-doc" onclick="MarkupApp.act('tool:select')" />
+                <p:commandButton type="button" value="Highlight" title="Drag to highlight an area"
+                                 styleClass="tool-btn tool-highlight needs-doc" onclick="MarkupApp.act('tool:highlight')" />
+                <p:commandButton type="button" value="Box" title="Drag to draw a rectangle"
+                                 styleClass="tool-btn tool-rect needs-doc" onclick="MarkupApp.act('tool:rect')" />
+                <p:commandButton type="button" value="Draw" title="Freehand drawing"
+                                 styleClass="tool-btn tool-ink needs-doc" onclick="MarkupApp.act('tool:ink')" />
+                <p:commandButton type="button" value="Text" title="Click to type text on the page"
+                                 styleClass="tool-btn tool-text needs-doc" onclick="MarkupApp.act('tool:text')" />
+                <p:commandButton type="button" value="Comment" title="Click to add a comment that PDF readers show as a note"
+                                 styleClass="tool-btn tool-note needs-doc" onclick="MarkupApp.act('tool:note')" />
+            </span>
+
+            <span class="grp style" role="group" aria-label="Markup style">
+                <label class="field">Color <input type="color" id="styleColor" value="#d32f2f" /></label>
+                <label class="field">Line
+                    <select id="styleLine">
+                        <option value="1">1 pt</option>
+                        <option value="2" selected="selected">2 pt</option>
+                        <option value="3">3 pt</option>
+                        <option value="5">5 pt</option>
+                        <option value="8">8 pt</option>
+                    </select>
+                </label>
+                <label class="field">Text
+                    <select id="styleFont">
+                        <option value="8">8 pt</option>
+                        <option value="10">10 pt</option>
+                        <option value="12">12 pt</option>
+                        <option value="14" selected="selected">14 pt</option>
+                        <option value="18">18 pt</option>
+                        <option value="24">24 pt</option>
+                        <option value="36">36 pt</option>
+                    </select>
+                </label>
+            </span>
+
+            <span class="grp" role="group" aria-label="Remove markup">
+                <p:commandButton type="button" value="Delete markup" title="Delete the selected markup (Delete key)"
+                                 styleClass="act-del-markup" onclick="MarkupApp.act('deleteMarkup')" />
+                <p:commandButton type="button" value="Clear page markup" title="Remove all markup from this page"
+                                 styleClass="needs-doc" onclick="MarkupApp.act('clearMarkup')" />
+            </span>
+
+            <label class="opt">
+                <input type="checkbox" id="optStamp" /> Add a &quot;marked up&quot; footer to every page
+            </label>
+        </h:form>
+    </header>
+
+    <main class="workspace">
+        <aside id="thumbs" aria-label="Pages">
+            <ol id="thumbList"></ol>
+        </aside>
+
+        <section id="viewer">
+            <div id="empty" class="empty">
+                <h1>Open a PDF to mark up</h1>
+                <p>Drop a file anywhere on this page, or choose one from your computer.
+                   Pages are drawn in your browser. The file is sent to the server only when you
+                   save, and your original is never changed.</p>
+                <button type="button" class="primary" onclick="MarkupApp.act('open')">Choose a PDF</button>
+            </div>
+
+            <div id="pageWrap" class="page-wrap" hidden="hidden">
+                <canvas id="pageCanvas"></canvas>
+                <canvas id="overlay" class="overlay tool-select"></canvas>
+                <textarea id="editor" class="editor" rows="2" hidden="hidden" aria-label="Markup text"></textarea>
+            </div>
+        </section>
+    </main>
+
+    <footer class="status">
+        <span id="statusFile"></span>
+        <span id="statusPage"></span>
+        <span id="statusMarks"></span>
+        <span id="statusZoom"></span>
+    </footer>
+
+    <input type="file" id="fileOpen" accept="application/pdf,.pdf" hidden="hidden" />
+    <input type="file" id="fileInsert" accept="application/pdf,.pdf" hidden="hidden" />
+
+    <script type="module" src="#{request.contextPath}/static/js/markup.js"></script>
+</h:body>
+</html>
